@@ -189,9 +189,9 @@ typedef NS_ENUM(NSInteger, EncryptedStoreError)
  
  @pre (error != NULL)
 
- @param oldPassphrase: The old passphrase.
- @param newPassphrase: The new passphrase.
- @param error: Inout error.
+ @param oldPassphrase The old passphrase.
+ @param newPassphrase The new passphrase.
+ @param error Inout error.
  @return The status of operation.
  */
 - (BOOL)changeDatabasePassphrase:(NSString *)oldPassphrase toNewPassphrase:(NSString *)newPassphrase error:(NSError *__autoreleasing*)error;
