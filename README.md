@@ -83,17 +83,19 @@ It is a part of setup core data stack process.
 `NSPersistentContainer` uses NSPersistentStoreDescriptions to configure stores.
 
 ```
+// Change all stuff that you need!
+// For example, you may need to get model somewhere.
 NSManagedObjectModel *model = [NSManagedObjectModel new];
 NSPersistentContainer *container = [[NSPersistentContainer alloc] initWithName:@"abc" managedObjectModel:model];
 NSDictionary *options = @{
-                          self.optionPassphraseKey : @"123",
-                          self.optionFileManager : [EncryptedStoreFileManager defaultManager]
+                          EncryptedStore.optionPassphraseKey : @"1234",
+                          EncryptedStore.optionFileManager : [EncryptedStoreFileManager defaultManager]
 };
-NSPersistentStoreDescription *description = [self makeDescriptionWithOptions:options configuration:nil error:nil];
+NSPersistentStoreDescription *description = [EncryptedStore makeDescriptionWithOptions:options configuration:nil error:nil];
 
 container.persistentStoreDescriptions = @[description];
 
-[container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *description, NSError * error) {
+[container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *theDescription, NSError * error) {
     if (error) {
         NSLog(@"error! %@", error);
     }
