@@ -271,13 +271,19 @@
     
     switch(type) {
             
-        case NSFetchedResultsChangeInsert:
+        case NSFetchedResultsChangeInsert: {
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
             break;
+        }
             
-        case NSFetchedResultsChangeDelete:
+        case NSFetchedResultsChangeDelete: {
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
             break;
+        }
+            
+        default: {
+            break;
+        }
     }
 }
 
