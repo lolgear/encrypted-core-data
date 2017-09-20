@@ -8,7 +8,7 @@
 #error This class requires ARC.
 #endif
 
-#import <sqlite3.h>
+#import "sqlite3.h"
 #import <objc/runtime.h>
 
 #import "EncryptedStore.h"
@@ -1167,10 +1167,8 @@ static const NSInteger kTableCheckVersion = 1;
 
     if ([passphrase length] > 0) {
         // Password provided, use it to key the DB
-        const char *string = [passphrase UTF8String];
-        status = sqlite3_rekey(database, string, (int)strlen(string));
-        string = NULL;
-        passphrase = nil;
+        NSData *passBytes = [passphrase dataUsingEncoding:NSUTF8StringEncoding];
+        status = sqlite3_rekey(database, passBytes.bytes, passBytes.length);
     } else {
         // No password
         status = SQLITE_OK;
@@ -1191,8 +1189,9 @@ static const NSInteger kTableCheckVersion = 1;
 
     if ([passphrase length] > 0) {
         // Password provided, use it to key the DB
-        const char *string = [passphrase UTF8String];
-        status = sqlite3_key(database, string, (int)strlen(string));
+        // Password provided, use it to key the DB
+        NSData *passBytes = [passphrase dataUsingEncoding:NSUTF8StringEncoding];
+        status = sqlite3_key(database, passBytes.bytes, passBytes.length);
     } else {
         // No password
         status = SQLITE_OK;
