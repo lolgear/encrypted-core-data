@@ -444,8 +444,16 @@ static const NSInteger kTableCheckVersion = 1;
         NSFetchRequestResultType type = [fetchRequest resultType];
         NSMutableArray *results = [NSMutableArray array];
         NSString * joinStatement = [self getJoinClause:fetchRequest withPredicate:[fetchRequest predicate] initial:YES];
+        NSString *table = nil;
+        if ([fetchRequest.predicate.debugDescription containsString:@"deviceName"]) {
+//            table = [self tableNameForEntityForFetchRequests:entity];
+            
+        }
+        else {
+            
+        }
+        table = [self tableNameForEntity:entity];
         
-        NSString *table = [self tableNameForEntity:entity];
         NSDictionary *condition = [self whereClauseWithFetchRequest:fetchRequest];
         NSDictionary *ordering = [self orderClause:fetchRequest forEntity:entity];
         NSString *limit = ([fetchRequest fetchLimit] > 0 ? [NSString stringWithFormat:@" LIMIT %lu", (unsigned long)[fetchRequest fetchLimit]] : @"");
@@ -613,7 +621,8 @@ static const NSInteger kTableCheckVersion = 1;
     NSDictionary *properties = [entity propertiesByName];
     __block NSUInteger tableAliasIndex = 0;
     [properties enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSPropertyDescription *obj, BOOL *stop) {
-        if (obj.transient) return;
+        //Here: Incorrect behaviour
+//        if (obj.transient) return;
         if ([obj isKindOfClass:[NSAttributeDescription class]]) {
             [columns addObject:[NSString stringWithFormat:@"%@.%@", table, key]];
             [keys addObject:key];
@@ -1556,7 +1565,7 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
             for (NSString *key in relations) {
                 NSRelationshipDescription *relation = [relations objectForKey:key];
                 NSRelationshipDescription *inverse = [relation inverseRelationship];
-                if (relation.transient || inverse.transient) continue;
+//                if (relation.transient || inverse.transient) continue;
                 if ([relation isToMany] && [inverse isToMany]) {
                     NSString *const tableName = [self tableNameForRelationship:relation];
                     if (! [tableNames containsObject:tableName]) {
@@ -1593,7 +1602,7 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
 - (NSDictionary*)relationshipsForEntity: (NSEntityDescription*) entity {
     NSMutableDictionary *relationships = [NSMutableDictionary dictionary];
     [[entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSRelationshipDescription * _Nonnull obj, BOOL * _Nonnull stop) {
-        if (obj.transient) return;
+//        if (obj.transient) return;
         relationships[key] = obj;
     }];
 
@@ -1612,7 +1621,8 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
     NSMutableSet *columns = [NSMutableSet setWithCapacity:entity.properties.count];
     
     [[entity attributesByName] enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSAttributeDescription * description, BOOL * stop) {
-        if (description.transient) return;
+        //HERE: Incorect behaviour.
+//        if (description.transient) return;
         if (!indexedOnly || description.isIndexed) {
             if (quotedNames) {
                 [columns addObject:[NSString stringWithFormat:@"'%@'", name]];
@@ -1623,7 +1633,7 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
     }];
     
     [[entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSRelationshipDescription * description, BOOL *stop) {
-        if (description.transient) return;
+//        if (description.transient) return;
         // NOTE: all joins get indexed
         // handle *-to-one
         // NOTE: hack - include many to many because we generate erroneous where clauses
@@ -2238,7 +2248,7 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
 
         [entity.relationshipsByName.allValues enumerateObjectsUsingBlock:^(NSRelationshipDescription * _Nonnull relation, NSUInteger relationshipIdx, BOOL * _Nonnull relationshipStop) {
             NSRelationshipDescription *inverse = relation.inverseRelationship;
-            if (relation.transient || inverse.transient) return;
+//            if (relation.transient || inverse.transient) return;
             if (relation.toMany && inverse.toMany && ![manytomany containsObject:inverse]) {
                 [manytomany addObject:relation];
             }
@@ -2398,7 +2408,7 @@ static void dbsqliteStripCaseDiacritics(sqlite3_context *context, int argc, cons
         NSMutableArray *columns = [NSMutableArray arrayWithObject:@"'__objectid'"];
         NSDictionary *properties = [entity propertiesByName];
         [properties enumerateKeysAndObjectsUsingBlock:^(id key, NSPropertyDescription *obj, BOOL *propertyStop) {
-            if (obj.transient) return;
+//            if (obj.transient) return;
             if ([obj isKindOfClass:[NSAttributeDescription class]]) {
                 [keys addObject:key];
                 [columns addObject:[NSString stringWithFormat:@"'%@'", key]];
